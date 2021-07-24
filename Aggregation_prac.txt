@@ -1,0 +1,33 @@
+Aggregation Pipeline for 
+
+Lab: Using Cursor-like Stages
+
+Solution:
+
+[{$match: {
+  countries: {$in:["USA"]},
+  "tomatoes.viewer.rating": {$gte:3},
+}}, {$addFields: {
+  fav_cast: {$filter:{
+    input: '$cast',
+    cond: {
+      $in : ['$$this',[
+  "Sandra Bullock",
+  "Tom Hanks",
+  "Julia Roberts",
+  "Kevin Spacey",
+  "George Clooney"]]
+    }
+  }}
+}}, {$match: {
+  fav_cast: {$elemMatch:{$exists:true}}
+}}, {$project: {
+  title: 1,
+  num_fav: {$size:'$fav_cast'},
+  "tomatoes.viewer.rating":1
+}}, {$sort: {
+  num_fav: -1,
+  "tomatoes.viewer.rating":-1,
+  title:-1
+
+  }}, {$skip: 25}]
